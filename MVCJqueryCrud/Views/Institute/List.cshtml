@@ -1,0 +1,197 @@
+﻿
+@{
+    ViewData["Title"] = "Students";
+}
+
+<link rel="stylesheet"
+      href="https://cdn.datatables.net/3.1.2/css/dataTables.dataTables.min.css" />
+
+<div class="container mt-4">
+
+   
+
+    <button class="btn btn-primary" type="button" 
+    
+    onclick="AddRecord()">
+       Add Student
+    </button>
+
+    <h2>Student List</h2>
+
+    <table id="studentTable" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Course</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        </tbody>
+    </table>
+
+
+    <div class="offcanvas offcanvas-start" id="demo">
+        <div class="offcanvas-header">
+            <h1 class="offcanvas-title">Add Student</h1>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body" id="da">
+          
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts
+{
+<script>
+
+            var deleteStudent,studentTable;
+
+    $(document).ready(function () {
+
+           studentTable = $('#studentTable').DataTable({
+
+            ajax: {
+                url: '/Institute/Index',
+                type: 'GET',
+
+             
+            },
+
+            columns: [
+                {
+                    data: 'id'
+                },
+                {
+                    data: 'name'
+                },
+                {
+                    data: 'email'
+                },
+                {
+                    data: 'course'
+                },
+                    {
+                        data: 'course'
+                    },
+                         {
+                data: null,
+                render: function (data, type, row) {
+                    return `
+                        <button class="btn btn-primary btn-sm"
+                                onclick="editStudent(${row.id})">
+                            Edit
+                        </button>
+
+                        <button class="btn btn-danger btn-sm"
+                                onclick="deleteStudent(${row.id})">
+                            Delete
+                        </button>
+                    `;
+                }
+            }
+            ]
+
+        });
+
+    });
+        deleteStudent = function(id)
+        {
+                          Swal.fire({
+          title: 'Are you sure?',
+          text: 'Are you sure you want to delete this?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#3085d6',
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            deleteItem(id); // your function runs only when OK is clicked
+          }
+        });
+        }
+
+
+       function deleteItem(id) 
+       {
+                  $.ajax({
+                  url: '/Institute/DeleteInfo/'+id,          // change to your endpoint
+          type: 'Get',
+         
+          dataType: 'json',
+        
+          success: function (res) {
+            if (res.status === 'success') {
+                    studentTable.ajax.reload(null, false);
+           
+              Swal.fire('Deleted!', res.message || 'Record has been deleted.', 'success');
+
+
+            } else {
+              Swal.fire('Error!', res.message || 'Could not delete record.', 'error');
+            }
+          },
+          error: function (xhr) {
+            Swal.fire('Error!', 'Something went wrong: ' + xhr.statusText, 'error');
+          }
+        });
+         
+          
+       }
+
+           function AddRecord()
+           {
+                    $.ajax({
+                          url: '/Institute/CreateStudentForm',         // change to your endpoint
+              type: 'Get',
+
+            
+
+              success: function (res) {
+
+                            $("#da").html(res);
+               
+                       new bootstrap.Offcanvas(document.getElementById('demo')).show();
+              },
+              error: function (xhr) {
+                Swal.fire('Error!', 'Something went wrong: ' + xhr.statusText, 'error');
+              }
+            });
+
+           }
+
+               function saveForm(form)
+           {
+                    $.ajax({
+                url: '/Institute/CreateStudentForm',
+            type: 'POST',
+            data: $(form).serialize(),
+            dataType: 'json',
+            success: function (res) {
+             
+                        bootstrap.Offcanvas.getInstance(document.getElementById('demo')).hide();
+                    form.reset();
+                    
+                    $('#studentTable').DataTable().ajax.reload(null, false);
+                    Swal.fire('Saved!', res.message, 'success');
+                
+            },
+            error: function (xhr) {
+                Swal.fire('Error!', 'Something went wrong: ' + xhr.statusText, 'error');
+            }
+        });
+
+        return false; // stops the normal page reload
+
+
+           }
+</script>
+
+}

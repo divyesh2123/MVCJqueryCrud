@@ -1,0 +1,48 @@
+﻿@{
+    Layout = null;
+}
+
+
+@model Institute
+
+
+<form id="studentForm" onsubmit="return saveForm(this)">
+    
+
+  
+        <input type="hidden" id="id" name="id" value="0" asp-for="Id" />
+
+        <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="name" name="name" required 
+            asp-for="Name"
+            />
+            <div class="invalid-feedback">Name is required.</div>
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" 
+            name="email" required asp-for="Email" />
+            <div class="invalid-feedback">Enter a valid email.</div>
+        </div>
+
+        <div class="mb-3">
+            <label for="course" class="form-label">Course</label>
+            <select class="form-select" id="course" name="course" required
+            asp-for="Course">
+                <option value="">-- Select Course --</option>
+                <option value="BCA">BCA</option>
+                <option value="MCA">MCA</option>
+                <option value="BSc IT">BSc IT</option>
+                <option value="B.Tech">B.Tech</option>
+            </select>
+            <div class="invalid-feedback">Please select a course.</div>
+        </div>
+   
+
+   
+        <button type="button" class="btn btn-secondary" >Cancel</button>
+        <button type="submit" class="btn btn-primary" id="btnSave">Save</button>
+    
+</form>
